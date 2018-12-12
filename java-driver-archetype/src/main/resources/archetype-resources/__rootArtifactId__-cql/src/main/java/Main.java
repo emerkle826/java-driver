@@ -13,7 +13,6 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
-import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +22,7 @@ public class Main {
   private static final String WELCOME =
       "This is a CQL demo. " +
       "See https://docs.datastax.com/en/cql/3.3/cql/cql_reference/cqlCommandsTOC.html " +
-      "for more info on CQL commands. Type 'EXIT' to quit.";
+      "for more info on CQL commands.\nType 'EXIT' to quit. Type 'HELP' to see available commands.";
 
   private final PrintStream output;
 
@@ -41,15 +40,15 @@ public class Main {
   }
 
   private void printKeyspaceTables(KeyspaceMetadata ksMetadata) {
-    System.out.println();
+    output.println();
     final String ksOutput = "Keyspace " + ksMetadata.getName().asInternal();
-    System.out.println(ksOutput);
+    output.println(ksOutput);
     for (int i = 0; i < ksOutput.length(); ++i) {
-      System.out.print("-");
+      output.print("-");
     }
-    System.out.println();
+    output.println();
     for (CqlIdentifier cqlId : ksMetadata.getTables().keySet()) {
-      System.out.println(cqlId.asInternal());
+      output.println(cqlId.asInternal());
     }
   }
 
@@ -59,11 +58,11 @@ public class Main {
     // get the metadata
     Metadata metadata = session.getMetadata();
     if (describeTarget.startsWith("keyspaces") || describeTarget.startsWith("KEYSPACES")) {
-      System.out.println();
+      output.println();
       for (CqlIdentifier cqlId : metadata.getKeyspaces().keySet()) {
-        System.out.print(cqlId.asInternal() + "  ");
+        output.print(cqlId.asInternal() + "  ");
       }
-      System.out.println();
+      output.println();
     } else if (describeTarget.startsWith("tables") || describeTarget.startsWith("TABLES")) {
       // dump all tables from the current keyspace or all keyspaces if no current keyspace
       if (session.getKeyspace().isPresent()) {
@@ -75,19 +74,17 @@ public class Main {
         }
       }
     } else {
-      System.out.println("\nDescribe target not implemented: '" + describeTarget + "'");
+      output.println("\nDescribe target not implemented: '" + describeTarget + "'");
     }
   }
 
   private void executeQuery(CqlSession session, String query) {
     try {
       ResultSet rs = session.execute(query);
-      Iterator<Row> iterator = rs.iterator();
-      while (iterator.hasNext()) {
-        Row row = iterator.next();
+      for (Row row: rs) {
         ColumnDefinitions cd = row.getColumnDefinitions();
         for (int i = 0; i < cd.size(); ++i) {
-          System.out.println(cd.get(i).getName() + ":  " + row.getObject(i).toString());
+          output.println(cd.get(i).getName() + ":  " + row.getObject(i).toString());
         }
       }
     } catch (Exception ex) {
@@ -95,6 +92,17 @@ public class Main {
       ex.printStackTrace(output);
     }
   }
+
+  private void printHelp() {
+    output.println();
+    output.println("Avaliable commands:\n");
+    output.println("DESCRIBE KEYSPACES\n\t-List of all keyspace names on the cluster.\n");
+    output.println("DESCRIBE TABLES\n\t-List of tables in the current keyspace or all tables in the cluster when no keyspace is selected.\n");
+    output.println("SELECT <args>\n\t-Retrieve data from a Cassandra table\n");
+    output.println("See https://docs.datastax.com/en/cql/3.3/cql/cql_reference/cqlSelect.html for details on SELECT.");
+
+  }
+
   /**
    * Basic cqlsh-like prompt. It loops until the user types "EXIT", executing queries and dumping
    * the response to the console (System.out).
@@ -108,6 +116,8 @@ public class Main {
     while (!"exit".equalsIgnoreCase(query)) {
       if (query.startsWith("describe") || query.startsWith("DESCRIBE")) {
         handleDescribe(session, query);
+      } else if (query.startsWith("help") || query.startsWith("HELP")) {
+        printHelp();
       } else {
         executeQuery(session, query);
       }
@@ -122,7 +132,7 @@ public class Main {
     Main main = new Main();
     CqlSessionBuilder builder = CqlSession.builder();
     // Set the host and port of the Cassandra server here
-    builder.addContactPoint(new InetSocketAddress("127.0.0.1", 9042));
+    builder.addContactPoint(new InetSocketAddress("${cassandra-host}", ${cassandra-port}));
     try (CqlSession session = builder.build();
         LineNumberReader commandLine = new LineNumberReader(new InputStreamReader(System.in))) {
       ResultSet rs = session.execute("SELECT release_version FROM system.local");
@@ -130,7 +140,7 @@ public class Main {
       // run the cqlsh demo
       main.cqlshLite(session, commandLine);
       // demo exited
-      System.out.println("\nGood Bye!");
+      main.output.println("\nGood Bye!");
     } catch (IOException ioe) {
       ioe.printStackTrace(main.output);
     }

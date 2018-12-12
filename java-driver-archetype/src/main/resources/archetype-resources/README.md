@@ -12,7 +12,8 @@ or was not set correctly when the project was generated, you will have to edit t
 source file and alter this line accordingly:
 
 ```
-builder.addContactPoint(InetSocketAddress.createUnresolved("${cassandra-host}", ${cassandra-port}));
+// Set the host and port of the Cassandra server here
+builder.addContactPoint(new InetSocketAddress("${cassandra-host}", ${cassandra-port}));
 ```
 
 ### Compiling and running the example

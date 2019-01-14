@@ -19,17 +19,17 @@ If you are looking to create a bootstrapped project, you can skip down to
 The following sections describe the general layout fo each Archetype template within this project.
 
 ### Archetype Metadata
-The [archetype-metadata.xml][1] conforms to the [Maven Archetype Descriptor Model][2]. It defines
-properties that must be set to generate a bootstrapped project as well as file set rules that
-control how source files are generated. The file must live in `src/main/resources/META-INF/maven` of
-**each** project.
+The [archetype-metadata.xml][1] in the CLI archetype conforms to the
+[Maven Archetype Descriptor Model][2]. It defines properties that must be set to generate a
+bootstrapped project as well as file set rules that control how source files are generated. The file
+must live in `src/main/resources/META-INF/maven` of **each** project.
 
 ### Archetype sources
 All of the source and resource files to be generated into a bootstrapped project need to be
 located in `src/main/resources/archetype-resources` directory of the project. A template of the
 generated `pom.xml` is located in this directory, as well as a basic README.md. Any other files that
 should be copied into the root of the generated project should be placed here. Adding files here
-will require updates to [archetype-metadata.xml][1] to ensure they are explicitly listed in the
+will require updates to `archetype-metadata.xml` to ensure they are explicitly listed in the
 `<fileSet>` that is copied during project generation.
 
 Each project will have sub-directories under `src/main/resources/archetype-resources` that will have
@@ -54,5 +54,5 @@ project. Most properties should have sensible defaults, but all can be specified
 the command line or in the interactive mode of `archetype:generate`. Please see the README for the
 specific archetype for more details.
 
-[1]: ../blob/master/src/main/resources/META-INF/maven/archetype-metadata.xml
+[1]: cli/src/main/resources/META-INF/maven/archetype-metadata.xml
 [2]: http://maven.apache.org/archetype/archetype-models/archetype-descriptor/archetype-descriptor.html

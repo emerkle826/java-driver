@@ -28,7 +28,7 @@ mvn clean install
 Then run the CQL demo with:
 
 ```
-mvn exec:java -Dexec.mainClass=${package}.Main -pl ${artifactId}-cql
+mvn exec:java -Dexec.mainClass=${package}.Main
 ```
 
 Running this example project should connect to Cassandra and log out the version:
@@ -42,13 +42,31 @@ Running this example project should connect to Cassandra and log out the version
 You will be left at a simple prompt that supports some basic CQL queries and commands.
 
 ```
-This is a CQL demo. See https://docs.datastax.com/en/cql/3.3/cql/cql_reference/cqlCommandsTOC.html for more info on CQL commands. Type 'EXIT' to quit.
+This is a CQL demo. See https://docs.datastax.com/en/cql/3.3/cql/cql_reference/cqlCommandsTOC.html for more info on CQL commands. Type 'EXIT' to quit. Type 'HELP' to see available commands.
 
 cql-demo>
 ```
 
 This demo supports running `DESCRIBE KEYSPACES`, `DESCRIBE TABLES` and executing simple `SELECT`
-statements. Please refer to the [cql command docs][1] for more on CQL queries and syntax.
+statements. Please refer to the [cql command docs][1] for more on CQL queries and syntax. You can
+also enter `help` to see the supported commands:
+
+```
+cql-demo> help
+
+Avaliable commands:
+
+DESCRIBE KEYSPACES
+	-List of all keyspace names on the cluster.
+
+DESCRIBE TABLES
+	-List of tables in the current keyspace or all tables in the cluster when no keyspace is selected.
+
+SELECT <args>
+	-Retrieve data from a Cassandra table
+
+See https://docs.datastax.com/en/cql/3.3/cql/cql_reference/cqlSelect.html for details on SELECT.
+```
 
 ### Customizing the Driver
 

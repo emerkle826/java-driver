@@ -28,25 +28,16 @@ located in `src/main/resources/archetype-resources` directory of _this_ project.
 generated `pom.xml` is located in this directory, as well as a basic README.md. Any other files that
 should be copied into the root of the generated project should be placed here. Adding files here
 will require updates to [archetype-metadata.xml][1] to ensure they are explicitly listed in the
-`&lt;fileSet&gt;` that is copied during project generation.
+`<fileSet>` that is copied during project generation.
 
-Additionally in `archetype-resources` is a template Maven multi-module project directory structure:
-
-```
-archetype-resources/__rootArtifactId__-core
-archetype-resources/__rootArtifactId__-cql
-archetype-resources/__rootArtifactId__-web
-```
-
-The `__rootArtifactId__` template will be replaced by the `artifactId` value chosed when the
-`archetype:generate` goal is executed (example: `myArtifact-core`). Each of the directories above
-will have the typical module directroy structure:
+The project will have sub-directories under `src/main/resources/archetype-resources` that will have
+the typical module directory structure:
 
 ```
-archetype-resources/__rootArtifactId__-core/src/main/java
-archetype-resources/__rootArtifactId__-core/src/main/resources
-archetype-resources/__rootArtifactId__-core/src/test/java
-archetype-resources/__rootArtifactId__-core/src/test/resources
+archetype-resources/src/main/java
+archetype-resources/src/main/resources
+archetype-resources/src/test/java
+archetype-resources/src/test/resources
 ```
 
 The only difference is that the Java source and test class files are not in packaged subdirectories,
@@ -69,7 +60,7 @@ when executing the generate command, or in interactive mode during bootstrap pro
 | ------------------- | --------------------- | ------------------- | ------------|
 | groupId             | &lt;no default&gt;    | com.mycompany.group | Sets the Maven `groupId` value in the pom.xml of the bootstrapped project |
 | artifactId          | &lt;no default&gt;    | myArtifact          | Sets the Maven 'artifactId' value in the pom.xml of the bootstrapped project |
-| version             | 1.0-SNAPSHOT          | 1.2.3               | Sets the Maven `version` value in the pom.xml of the bootstrapped project |
+| version             | 1.0-SNAPSHOT          | 1.0.0-SNAPSHOT      | Sets the Maven `version` value in the pom.xml of the bootstrapped project |
 | package             | &lt;groupId value&gt; | com.mycompany.poc   | Controls the base package for all generated source code |
 | java-driver-version | [4.0.0-beta1,)        | 4.0.0               | The Java Driver version to use (NOTE: only 4.x and newer versions are supported) |
 | cassandra-host      | 127.0.0.1             | 10.10.1.16          | The host or IP address of the Cassandra instance to which to connect |
@@ -84,9 +75,8 @@ when executing the generate command, or in interactive mode during bootstrap pro
 mvn archetype:generate -DarchetypeGroupId=com.datastax.oss -DarchetypeArtifactId=java-driver-archetype
 ```
 The above will generate the bootstrap project, but you will have to provide values for any required
-properties that have no default, including `groupId`, `artifactId`, `version` and `package`. These
-values are used to setup your bootstrap project `pom.xml` and generate source code in the desired
-`package`.
+properties that have no default (at least`groupId` and `artifactId`). These values are used to setup
+your bootstrap project `pom.xml` and generate source code in the desired `package`.
 
 #### Specify everything command
 ```
@@ -101,8 +91,6 @@ values shown. If you are happy with what you see, simply hit `enter` to proceed.
 change any of the values, type in `N` and hit `enter` to start the interactive edit of the values.
 
 ```
-[INFO] Archetype [com.datastax.oss:java-driver-archetype:4.0.0-SNAPSHOT] found in catalog local
-Downloading from datastax-artifactory: https://repo.datastax.com/dse/com/datastax/oss/java-driver-archetype/4.0.0-SNAPSHOT/maven-metadata.xml
 [INFO] Using property: groupId = com.mycompany.group
 [INFO] Using property: artifactId = myArtifact
 [INFO] Using property: version = 1.0.0-SNAPSHOT
@@ -132,8 +120,7 @@ Once you complete the archetype generation, you should have a simple Maven proje
 working directory. Change into that directory and execute the following:
 
 ```
-mvn clean install
-mvn compile exec:java -Dexec.mainClass=com.mycompany.poc.Main -pl myArtifact-cql
+mvn compile exec:java -Dexec.mainClass=com.mycompany.poc.Main
 ```
 
 This should produce output similar to:
@@ -144,5 +131,17 @@ This should produce output similar to:
 15:57:33.431 [com.mycompany.poc.Main.main()] INFO  com.mycompany.poc.Main - Cassandra release version: 3.11.3
 ```
 
-[1]: ../blob/master/src/main/resources/META-INF/maven/archetype-metadata.xml
+#### Troubleshooting
+
+If you see an error like this when trying to execute the example:
+
+> [WARNING]
+> com.datastax.oss.driver.api.core.AllNodesFailedException: Could not reach any contact point, make sure you've provided valid addresses (showing first 1, use getErrors() for more: /127.0.0.1:9042: com.datastax.oss.driver.api.core.connection.ConnectionInitException: [myArtifact|control|connecting...] init query STARTUP: error writing )
+
+It means the example client can't connect to Cassandra. Check that Cassandra is running on the host
+and port you specified, and that the client is not being blocked by any sort of firewall. When
+running the example above, it usually indicates Cassandra isn't running or did not start up
+correctly.
+
+[1]: src/main/resources/META-INF/maven/archetype-metadata.xml
 [2]: http://maven.apache.org/archetype/archetype-models/archetype-descriptor/archetype-descriptor.html

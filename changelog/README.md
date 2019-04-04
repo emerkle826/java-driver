@@ -4,6 +4,7 @@
 
 ### 4.0.1 (in progress)
 
+- [bug] JAVA-2214: Fix flaky RequestLoggerIT test
 - [bug] JAVA-2210: Add ability to set TTL for modification queries
 - [improvement] JAVA-2212: Add truncate to QueryBuilder 
 - [improvement] JAVA-2211: Upgrade Jersey examples to fix security issue sid-3606

@@ -53,11 +53,10 @@ public class LifecycleListenerIT {
     assertThat(listener.ready).isFalse();
     assertThat(listener.closed).isFalse();
 
-    try (CqlSession session = newSession(listener)) {
+    try (CqlSession ignored = newSession(listener)) {
       ConditionChecker.checkThat(() -> listener.ready).before(1, SECONDS).becomesTrue();
       assertThat(listener.closed).isFalse();
     }
-    assertThat(listener.ready).isTrue();
     ConditionChecker.checkThat(() -> listener.closed).before(1, SECONDS).becomesTrue();
   }
 
@@ -68,7 +67,7 @@ public class LifecycleListenerIT {
     assertThat(listener.closed).isFalse();
 
     simulacronRule.cluster().rejectConnections(0, RejectScope.STOP);
-    try (CqlSession session = newSession(listener)) {
+    try (CqlSession ignored = newSession(listener)) {
       fail("Expected AllNodesFailedException");
     } catch (AllNodesFailedException ignored) {
     } finally {

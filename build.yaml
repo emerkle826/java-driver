@@ -43,16 +43,10 @@ schedules:
     notify:
       slack: java-driver-dev-bots
 java:
-  - openjdk6
-  - openjdk7
-  - openjdk8
   - openjdk11
 os:
   - ubuntu/bionic64/java-driver
 cassandra:
-  - '2.1'
-  - '2.2'
-  - '3.0'
   - '3.11'
 build:
   - script: |
@@ -66,7 +60,7 @@ build:
       jdk_switcher use $JAVA_VERSION
   - type: maven
     version: 3.2.5
-    goals: verify --fail-never -P$TEST_GROUP
+    goals: verify --fail-never -P$TEST_GROUP --show-version
     properties: |
       com.datastax.driver.TEST_BASE_NODE_WAIT=120
       com.datastax.driver.NEW_NODE_DELAY_SECONDS=100
@@ -79,7 +73,7 @@ build:
       maven.javadoc.skip=true
   - type: maven
     version: 3.2.5
-    goals: verify --fail-never -Pisolated
+    goals: verify --fail-never -Pisolated --show-version
     properties: |
       com.datastax.driver.TEST_BASE_NODE_WAIT=120
       com.datastax.driver.NEW_NODE_DELAY_SECONDS=100

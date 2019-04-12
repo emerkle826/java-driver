@@ -5,12 +5,12 @@ schedules:
     matrix:
       exclude:
         # Exclude all builds on old jdk versions
-        - java: ['openjdk6','openjdk7']
+        - jabba: ['zulu_jdk6','zulu_jdk7']
         # Exclude java8 with all versions except latest
-        - java: openjdk8
+        - jabba: oracle_jdk8
           cassandra: ['2.2', '3.0']
         # Exclude java11 with all versions except latest
-        - java: openjdk11
+        - jabba: openjdk_jdk11
           cassandra: ['2.1', '2.2', '3.0']
     env_vars: |
       TEST_GROUP="short"
@@ -42,22 +42,26 @@ schedules:
     disable_pull_requests: true
     notify:
       slack: java-driver-dev-bots
-java:
-  - openjdk6
-  - openjdk11
+jabba:
+  - zulu_jdk6
+  - zulu_jdk7
+  - oracle_jdk8
+  - openjdk_jdk11
 os:
   - ubuntu/bionic64/java-driver
 cassandra:
+  - '2.1'
+  - '2.2'
+  - '3.0'
   - '3.11'
 build:
   - script: |
-      . /usr/local/bin/jdk_switcher.sh
-      jdk_switcher use openjdk8
+      jabba use default
       export JAVA8_HOME=$JAVA_HOME
       export MAVEN_HOME=/home/jenkins/.mvn/apache-maven-3.2.5
       export PATH=$MAVEN_HOME/bin:$PATH
       mvn -B -V install -DskipTests
-      jdk_switcher use $JAVA_VERSION
+      jabba use $JABBA_JDK_NAME
       mvn -B -V verify --fail-never -P$TEST_GROUP -Dcom.datastax.driver.TEST_BASE_NODE_WAIT=120 -Dcom.datastax.driver.NEW_NODE_DELAY_SECONDS=100 -Dcassandra.version=$CCM_CASSANDRA_VERSION -Dccm.java.home=$CCM_JAVA_HOME -Dccm.path=$CCM_JAVA_HOME/bin -Dccm.maxNumberOfNodes=3 -DfailIfNoTests=false -Dmaven.test.failure.ignore=true -Dmaven.javadoc.skip=true
       mvn -B -V verify --fail-never -Pisolated -Dcom.datastax.driver.TEST_BASE_NODE_WAIT=120 -Dcom.datastax.driver.NEW_NODE_DELAY_SECONDS=100 -Dcassandra.version=$CCM_CASSANDRA_VERSION -Dccm.java.home=$CCM_JAVA_HOME -Dccm.path=$CCM_JAVA_HOME/bin -Dccm.maxNumberOfNodes=3 -DfailIfNoTests=false -Dmaven.test.failure.ignore=true -Dmaven.javadoc.skip=true
   - xunit:

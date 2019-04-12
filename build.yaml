@@ -25,15 +25,12 @@ build:
       jabba use default
       export MAVEN_HOME=/home/jenkins/.mvn/apache-maven-3.3.9
       export PATH=$MAVEN_HOME/bin:$PATH
-      id
       mvn -B -V install -DskipTests  --show-version
   - script: |
       jabba use $JABBA_VERSION
-  - type: maven
-    version: 3.2.5
-    goals: verify --batch-mode --show-version
-    properties: |
-      ccm.version=$CCM_CASSANDRA_VERSION
+      export MAVEN_HOME=/home/jenkins/.mvn/apache-maven-3.3.9
+      export PATH=$MAVEN_HOME/bin:$PATH
+      mvn -B -V verify --batch-mode --show-version -Dccm.version=$DDM_CASSANDRA_VERSION -Dmaven.javadoc.skip=true
   - xunit:
     - "**/target/surefire-reports/TEST-*.xml"
     - "**/target/failsafe-reports/TEST-*.xml"

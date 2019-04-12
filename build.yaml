@@ -28,7 +28,7 @@ build:
       export JAVA8_HOME=$JAVA_HOME
       mvn -B -V install -DskipTests
       jabba use $JABBA_VERSION
-      mvn -B -V verify --batch-mode --show-version -Dccm.version=$DCCM_CASSANDRA_VERSION -Dmaven.javadoc.skip=true
+      mvn -B -V verify --batch-mode --show-version -Dccm.version=$CCM_CASSANDRA_VERSION -Dmaven.javadoc.skip=true
   - xunit:
     - "**/target/surefire-reports/TEST-*.xml"
     - "**/target/failsafe-reports/TEST-*.xml"
